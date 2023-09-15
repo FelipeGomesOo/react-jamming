@@ -1,23 +1,12 @@
-import React, { useState } from 'react'; 
-import NavBar from './components/NavBar'
+import React from 'react';
+import './App.css';  
+import { LogInSpotify, isLoggedIn } from './services/api';
+import Login from './components/Login' 
+import Main from './components/Main';
 
- 
-import './App.css';
-
-function App() {
-
-  const [openMenu, SetOpenMenu] = useState(false);
-  const toggleOpenMenu = (e) => {    
-    e.preventDefault();
-    SetOpenMenu(!openMenu)
-    console.log(openMenu);
-  } 
-
-  return (
-    <div className="App">
-      <NavBar openMenu={toggleOpenMenu} />
-    </div>
-  );
-}
-
-export default App;
+export default function App() { 
+    return ( 
+    <> 
+      { isLoggedIn ? <Main /> : <Login LogInSpotify={LogInSpotify} />}   
+    </>    
+)} 
