@@ -6,7 +6,7 @@
 const LogInSpotify = () => {
     const client_id = 'b15d5ae100e74e55995ef88dbb928971';
     const redirect_uri = 'http://localhost:3000/';
-    const scope = 'user-read-private user-read-email';
+    const scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
     const state = uuidv4(16);
     localStorage.setItem('tokenState', state); 
@@ -63,4 +63,14 @@ console.log( `
 
 `) 
 
-export {LogInSpotify, token, isLoggedIn}
+
+
+// API
+const ApiData = {
+    token: localToken,
+    url: "https://api.spotify.com/v1/",
+    search: "search?q=" 
+}
+
+
+export {LogInSpotify, isLoggedIn, ApiData}

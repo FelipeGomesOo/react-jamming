@@ -158,6 +158,15 @@ form input:hover{
   background-color: rgb(0, 255, 132);
   color: #16191f;
 }
+.App-header .userMenu {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+.App-header .userMenu .userMenu__avatar{
+  border-radius: 90rem;
+  width: 2.4rem;
+}
 
 .App-row{
   max-width: 1024px;
@@ -190,6 +199,7 @@ main .App-row{
 }
 .Track__thumbnail img{
   border-radius: 3px;
+  max-width: 4.2rem;
 }  
 .Track:hover{
   background-color: #353942;
