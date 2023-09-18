@@ -8,7 +8,7 @@ import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
 
-export default function Main({ApiData}) {        
+export default function Main({ApiData, isLoggedIn}) {        
     
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
@@ -45,6 +45,7 @@ export default function Main({ApiData}) {
             const jsonResponse = await response.json(); 
             const queryTracks = jsonResponse.tracks.items.map(item => ({
                 id:  item.id,
+                uri:  item.uri,
                 thumb: item.album.images[0].url,
                 title: item.name,
                 album: item.album.name,
@@ -59,7 +60,7 @@ export default function Main({ApiData}) {
       
     // Edit a playlist
 
-    const emptyPlaylist = {id:"", name:"", tracks:[], spotify:false}
+    const emptyPlaylist = {id:"", name:"", tracks:[], spotifyId:""}
     const [editPlaylist, SetEditPlaylist] = useState(emptyPlaylist);
 
     const addToPlaylist = (e) => {
@@ -102,7 +103,7 @@ export default function Main({ApiData}) {
         }   
     } 
     const savePlaylist = () => {          
-        SetPlaylists((playlists) => [{id:uuidv4(), name: editPlaylist.name, tracks: editPlaylist.tracks, spotify:false}, ...playlists]);   
+        SetPlaylists((playlists) => [{id:uuidv4(), name: editPlaylist.name, tracks: editPlaylist.tracks, spotifyId:editPlaylist.spotifyId}, ...playlists]);   
         resetMyPlaylist();
     }    
     const editThisPlaylist = (e, playlistId) => {
@@ -150,6 +151,7 @@ export default function Main({ApiData}) {
      
     // Save Playlist to Spotify
     const savePlaylistToSpotify = async (e, thisPlaylistId) => { 
+        e.preventDefault();
         const endpoint = ApiData.url + "users/" + userData.id + "/playlists";
         const playlistToSend = playlists.find(p => p.id === thisPlaylistId);         
         
@@ -168,12 +170,40 @@ export default function Main({ApiData}) {
         });
         if(response.ok){
             const jsonResponse = await response.json();                          
-            console.log("Deu certo: " + jsonResponse);                       
+            console.log(jsonResponse.id);
+            addTracksToSpotify(playlistToSend, jsonResponse.id);                       
         } 
         } catch (error) {
         console.log(error);
         }  
-    } 
+    }
+    // Save Playlist to Spotify
+    const addTracksToSpotify = async (playlistToSend, thisPlaylistSpotifyId) => { 
+        const endpoint = ApiData.url + "playlists/" + thisPlaylistSpotifyId + "/tracks";
+        const tracksToSend = playlistToSend.tracks;         
+        
+         try { const response = await fetch(endpoint, {
+            method: 'POST',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ApiData.token}`
+            }, 
+            body: JSON.stringify({
+                'uris': tracksToSend.map(track => track.uri)
+              })
+            
+        });
+        if(response.ok){
+            const jsonResponse = await response.json();                          
+            console.log(jsonResponse)                       
+        } 
+        } catch (error) {
+        console.log(error);
+        }  
+    }   
+    const logout = () => {
+        localStorage.setItem('tokenExpiration', "");
+    }
     
     return (
         
@@ -192,6 +222,7 @@ export default function Main({ApiData}) {
           openMenu={toggleOpenMenu} 
           playlists={playlists}
           userData={userData}
+          logout={logout}
         /> 
         <main>                
             <div className="App-row">

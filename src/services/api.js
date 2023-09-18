@@ -31,7 +31,8 @@ const token = {
     access: urlParams.get("http://localhost:3000/#access_token"),
     type: urlParams.get("token_type"),
     expiration: new Date().getTime() + (parseInt(urlParams.get("expires_in")) * 1000),
-    state: urlParams.get("state")
+    state: urlParams.get("state"),
+    logout: urlParams.get("logout"),
 }
 
 // Store Token and Expiration
@@ -43,7 +44,7 @@ if(localStorage.tokenState === token.state){
 } 
 
 // Local Token and Expiration time 
-const localToken = localStorage.getItem('tokenAccess');
+const localToken = !token.logout && localStorage.getItem('tokenAccess');
 const localExpiration = localStorage.getItem('tokenExpiration'); 
 
 const isLoggedIn =  localExpiration > new Date().getTime(); 

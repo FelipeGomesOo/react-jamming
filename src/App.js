@@ -7,7 +7,7 @@ import Main from './components/Main';
 export default function App() { 
     return ( 
     <>{ isLoggedIn ? 
-    <Main ApiData={ApiData} /> 
+    <Main ApiData={ApiData} isLoggedIn={isLoggedIn} /> 
     : 
     <Login LogInSpotify={LogInSpotify} />
     }</>    
