@@ -4,7 +4,7 @@
 // Authorization Request 
 
 const LogInSpotify = () => {
-    const client_id = 'b15d5ae100e74e55995ef88dbb928971';
+    const client_id = ${{ secrets.SPOTIFY_API_KEY }};
     const redirect_uri = 'http://localhost:3000/';
     const scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
