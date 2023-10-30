@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react'; 
+import React, {useState, useEffect, useCallback} from 'react'; 
 import { Navigate } from 'react-router-dom';
 import NavBar from './NavBar';
 import SavedPlaylistList from './SavedPlaylistList';
@@ -127,7 +127,7 @@ export default function Main({ApiData, isLoggedIn}) {
     const emptyUserData= {id:"", name:"", img:""}
     const [userData, SetuserData] = useState(emptyUserData);
 
-    const getUserData = async () => { 
+    const getUserData = useCallback(async () => { 
         const endpoint = "https://api.spotify.com/v1/me";
         try { const response = await fetch(endpoint, {
             method: 'GET',
@@ -146,7 +146,7 @@ export default function Main({ApiData, isLoggedIn}) {
         } catch (error) {
         console.log(error);
         }
-    }
+    }, []);
     // eslint-disable-next-line 
     useEffect(() => {
         getUserData();
