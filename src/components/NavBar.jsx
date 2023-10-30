@@ -7,7 +7,7 @@ return (
     <h1>Jamming</h1>
     <div className="userMenu">
       <img onClick={logout} className='userMenu__avatar' src={userData.img} alt={userData.name} /> 
-      <a className="MenuTogler" href='#' onClick={openMenu}>My Playlists 
+      <a className="MenuTogler" href='/' onClick={openMenu}>My Playlists 
         <span className={`playlistCount ${playlists.length > 0 && 'populated'}`}> {playlists.length}</span>
       </a>
     </div>

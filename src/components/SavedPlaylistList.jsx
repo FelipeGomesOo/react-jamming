@@ -27,7 +27,7 @@ export default function SavedPlaylistList({playlists, editThisPlaylist, removeTh
 
     return (
     <div className={`SavedPlaylistList ${openMenu ? 'open' : 'closed'}`}>    
-        <a className="MenuTogler" href='#' onClick={handleMenu}> ← Back</a>
+        <a className="MenuTogler" href='/' onClick={handleMenu}> ← Back</a>
         <h2>My Playlists</h2>
         {emptyState ? addSomePlaylists : playlistsAdded}
     </div>

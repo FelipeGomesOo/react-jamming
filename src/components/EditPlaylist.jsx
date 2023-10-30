@@ -5,7 +5,7 @@ export default function EditPlaylist({editListTracks, removeFromPlaylist, upsert
     
     return ( 
     <div className="EditPlaylist box">
-      <a className="button topRightButton EditPlaylist__cancelEdit" href="#" onClick={handleCancelEdit}>✖</a>
+      <a className="button topRightButton EditPlaylist__cancelEdit" href="/" onClick={handleCancelEdit}>✖</a>
       <h2 className='EditPlaylist__title'>Edit your playlist</h2>
       <form className='form_bar' onSubmit={upsertPlaylist}>
         <input className='form_bar__input' type="text" placeholder='Name your playlist' value={playlistName} onChange={handlePlaylistName} />
