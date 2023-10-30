@@ -149,7 +149,7 @@ export default function Main({ApiData, isLoggedIn}) {
     } 
     useEffect(() => {
         getUserData();
-      }, []);
+      }, [getUserData]);
      
     // Save Playlist to Spotify
     const savePlaylistToSpotify = async (e, thisPlaylistId) => { 
