@@ -1,5 +1,5 @@
-import React, {useState, useEffect} from 'react';
-import apiTrackList from '../assets/MockTrackList';
+import React, {useState, useEffect} from 'react'; 
+import { Navigate } from 'react-router-dom';
 import NavBar from './NavBar';
 import SavedPlaylistList from './SavedPlaylistList';
 import SearchBar from './SearchBar';
@@ -8,7 +8,9 @@ import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
 
-export default function Main({ApiData, isLoggedIn}) {        
+export default function Main({ApiData, isLoggedIn}) {   
+    
+    
     
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
@@ -204,6 +206,9 @@ export default function Main({ApiData, isLoggedIn}) {
     const logout = () => {
         localStorage.setItem('tokenExpiration', "");
     }
+    if (!isLoggedIn) {
+        return <Navigate to="/login" />
+    } 
     
     return (
         
