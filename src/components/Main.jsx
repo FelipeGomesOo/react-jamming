@@ -146,10 +146,11 @@ export default function Main({ApiData, isLoggedIn}) {
         } catch (error) {
         console.log(error);
         }
-    } 
+    }
+    // eslint-disable-next-line 
     useEffect(() => {
         getUserData();
-      }, [getUserData]);
+      }, []);
      
     // Save Playlist to Spotify
     const savePlaylistToSpotify = async (e, thisPlaylistId) => { 
