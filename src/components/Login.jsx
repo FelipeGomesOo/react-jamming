@@ -1,14 +1,14 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-export default function Login({LogInSpotify, isLoggedIn}) {
+export default function Login({LogInSpotify, isLoggedIn, publicPath}) {
     if (isLoggedIn) {
-        return <Navigate to="/" />
+        return <Navigate to={publicPath} />
     } 
     return (
         <div className="Login">
             <h1>Welcome to Jamming</h1>  
-            <a href="/" onClick={() => LogInSpotify()}>Authorize!</a> 
+            <a href="#" onClick={() => LogInSpotify()}>Authorize!</a> 
         </div>
     )    
 }

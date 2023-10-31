@@ -9,8 +9,8 @@ const publicPath = process.env.PUBLIC_URL || '/';
 const appRouter = createBrowserRouter(createRoutesFromElements(
 <>
   <Route path={publicPath} element={<Root/>}>  
-    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} /> } /> 
-    <Route path={`${publicPath}login`} element={<Login LogInSpotify={LogInSpotify} /> } />  
+    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath}/> } /> 
+    <Route path={`${publicPath}login`} element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
   </Route>
 </>
 ));
