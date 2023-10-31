@@ -9,8 +9,8 @@ const publicPath = process.env.REACT_APP_PUBLIC_URL;
 const appRouter = createBrowserRouter(createRoutesFromElements(
 <>
   <Route path='/' element={<Root/>}>  
-    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn}/> } /> 
-    <Route path='login' element={<Login LogInSpotify={LogInSpotify} /> } />  
+    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath} /> } /> 
+    <Route path='login' element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
   </Route>
 </>
 ));
