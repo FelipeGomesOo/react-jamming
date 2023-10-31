@@ -1,9 +1,9 @@
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 
-export default function Login({LogInSpotify, isLoggedIn}) {
+export default function Login({LogInSpotify, isLoggedIn, publicPath}) {
     if (isLoggedIn) {
-        return <Navigate to="/" />
+        return <Navigate to={publicPath} />
     } 
     return (
         <div className="Login">
