@@ -9,14 +9,16 @@ const publicPath = process.env.REACT_APP_PUBLIC_URL;
 const appRouter = createBrowserRouter(createRoutesFromElements(
 <>
   <Route path='/' element={<Root/>}>  
-    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath}/> } /> 
-    <Route path='login' element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
+    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn}/> } /> 
+    <Route path='login' element={<Login LogInSpotify={LogInSpotify} /> } />  
   </Route>
 </>
 ));
 
 
-export default function App() {   
+export default function App() {
+    console.log(`Public path: ${publicPath}`);
+    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);   
     return (
         <>      
           <RouterProvider router={appRouter}  />
