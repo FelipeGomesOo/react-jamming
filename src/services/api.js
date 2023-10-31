@@ -27,7 +27,7 @@ const LogInSpotify = () => {
 
 const urlParams = new URLSearchParams(window.location.href);
 const token = {
-    access: urlParams.get("http://localhost:3000/#access_token"),
+    access: urlParams.get(`${process.env.REACT_APP_PUBLIC_URL}#access_token`),
     type: urlParams.get("token_type"),
     expiration: new Date().getTime() + (parseInt(urlParams.get("expires_in")) * 1000),
     state: urlParams.get("state"),

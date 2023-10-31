@@ -6,14 +6,19 @@ import Main from './components/Main';
 import Root from './components/Root.js';
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
 const publicPath = process.env.REACT_APP_PUBLIC_URL; 
-const appRouter = createBrowserRouter(createRoutesFromElements(
-<>
-  <Route path='/' element={<Root/>}>  
-    <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath} /> } /> 
-    <Route path='login' element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
-  </Route>
-</>
-));
+const appRouter = createBrowserRouter(
+    createRoutesFromElements(
+        <>
+        <Route path='/' element={<Root/>}>  
+            <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath} /> } /> 
+            <Route path='login' element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
+        </Route>
+        </>
+    ),
+    {
+        basename: '/jamming', // Adicione o basename aqui
+    }
+);
 
 
 export default function App() {
