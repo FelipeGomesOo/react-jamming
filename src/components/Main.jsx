@@ -8,7 +8,7 @@ import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
 
-export default function Main({ApiData, isLoggedIn, publicPath}) {   
+export default function Main({ApiData, isLoggedIn}) {   
     
     
     
