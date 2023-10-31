@@ -204,7 +204,7 @@ export default function Main({ApiData, isLoggedIn, publicPath}) {
         localStorage.setItem('tokenExpiration', "");
     }
     if (!isLoggedIn) {
-        return <Navigate to={`${publicPath}login`} />
+        return <Navigate to={`login`} />
     } 
     
     return (
