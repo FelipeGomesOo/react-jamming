@@ -9,9 +9,6 @@ import { v4 as uuidv4 } from 'uuid';
 
 
 export default function Main({ApiData, isLoggedIn}) {   
-    
-    
-    
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
       e.preventDefault();
@@ -205,6 +202,7 @@ export default function Main({ApiData, isLoggedIn}) {
     }   
     const logout = () => {
         localStorage.setItem('tokenExpiration', "");
+        <Navigate to='login' />
     }
     if (!isLoggedIn) {
         return <Navigate to='login' />
