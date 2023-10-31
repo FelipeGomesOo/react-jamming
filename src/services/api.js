@@ -4,7 +4,7 @@
 
 const LogInSpotify = () => {
     const client_id = process.env.REACT_APP_spotify_client_id;
-    const redirect_uri = process.env.PUBLIC_URL;
+    const redirect_uri = process.env.REACT_APP_PUBLIC_URL;
     const scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
     const state = uuidv4(16);
