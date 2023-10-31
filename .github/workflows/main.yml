@@ -28,5 +28,4 @@ jobs:
         server: ${{ secrets.MY_SITE_FTP_SERVER }}
         username: ${{ secrets.MY_SITE_FTP_USERNAME }}
         password: ${{ secrets.MY_SITE_FTP_PASS }}
-        local-dir: ./build/
-        server-dir: /jamming/
+        local-dir: ./build/ 
