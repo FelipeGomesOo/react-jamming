@@ -6,7 +6,8 @@ export default function Login({LogInSpotify, isLoggedIn, publicPath}) {
     const config = useContext(ConfigContext);
     let redirPath = process.env.NODE_ENV === 'production' ? config.siteUrl : config.localUrl;
    
-    console.log(redirPath)
+    console.log(redirPath);
+    console.log(config.client_id);
     if(isLoggedIn) {
         return <Navigate to={publicPath} />
     }  
