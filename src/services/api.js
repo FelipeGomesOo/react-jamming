@@ -1,6 +1,6 @@
   import { v4 as uuidv4 } from 'uuid';
   
-  let urlPath = process.env.NODE_ENV === 'production' ? "https://felipe-gomes.com/jamming" : "http://localhost:3000/jamming/";
+  let urlPath = process.env.NODE_ENV === 'production' ? "https://felipe-gomes.com/jamming/" : "http://localhost:3000/jamming/";
 
 // Authorization Request 
 
