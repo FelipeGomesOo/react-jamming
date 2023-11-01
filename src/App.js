@@ -1,10 +1,11 @@
 import React from 'react';
 import './App.css';  
 import { LogInSpotify, isLoggedIn, ApiData } from './services/api';
-import Login from './components/Login' 
+import Login from './components/Login'; 
 import Main from './components/Main';
 import Root from './components/Root.js';
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
+import {ConfigProvider} from './services/FetchConfig';
 const publicPath = process.env.REACT_APP_PUBLIC_URL; 
 const appRouter = createBrowserRouter(
     createRoutesFromElements(
@@ -18,14 +19,15 @@ const appRouter = createBrowserRouter(
     {
         basename: '/jamming', // Adicione o basename aqui
     }
-);
-
+); 
 
 export default function App() {
     console.log(`Public path: ${publicPath}`);
-    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);   
+    console.log(`NODE_ENV: ${process.env.NODE_ENV}`);      
     return (
-        <>      
-          <RouterProvider router={appRouter}  />
+        <>  
+        <ConfigProvider> 
+          <RouterProvider router={appRouter}/>
+        </ConfigProvider>     
         </>
 )} 

@@ -1,10 +1,9 @@
- import { v4 as uuidv4 } from 'uuid';
-
+  import { v4 as uuidv4 } from 'uuid'; 
 // Authorization Request 
 
-const LogInSpotify = () => {
-    const client_id = process.env.REACT_APP_spotify_client_id;
-    const redirect_uri = process.env.REACT_APP_PUBLIC_URL;
+const LogInSpotify = (propClientID,propUrl) => {
+    const client_id = propClientID;
+    const redirect_uri = propUrl;
     const scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
     const state = uuidv4(16);

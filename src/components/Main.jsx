@@ -7,7 +7,6 @@ import SearchResult  from './SearchResult';
 import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
-
 export default function Main({ApiData, isLoggedIn}) {   
     
     
@@ -24,7 +23,7 @@ export default function Main({ApiData, isLoggedIn}) {
 
     const handleTerm = (e) => SetSearchTerm(e.target.value);
     const handleSearchSubmit = (e) => {
-        e.preventDefault();
+        e.preventDefault(); 
         searchTerm.length !== 0 && (search());
     }
 
