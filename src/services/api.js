@@ -1,9 +1,12 @@
-  import { v4 as uuidv4 } from 'uuid'; 
+  import { v4 as uuidv4 } from 'uuid';
+  
+  let urlPath = process.env.NODE_ENV === 'production' ? "https://felipe-gomes.com/jamming" : "http://localhost:3000/jamming/";
+
 // Authorization Request 
 
-const LogInSpotify = (propClientID,propUrl) => {
+const LogInSpotify = (propClientID) => {
     const client_id = propClientID;
-    const redirect_uri = propUrl;
+    const redirect_uri = urlPath;
     const scope = 'user-read-private user-read-email playlist-modify-public playlist-modify-private';
 
     const state = uuidv4(16);
@@ -26,7 +29,7 @@ const LogInSpotify = (propClientID,propUrl) => {
 
 const urlParams = new URLSearchParams(window.location.href);
 const token = {
-    access: urlParams.get(`${process.env.REACT_APP_PUBLIC_URL}#access_token`),
+    access: urlParams.get(`${urlPath}#access_token`),
     type: urlParams.get("token_type"),
     expiration: new Date().getTime() + (parseInt(urlParams.get("expires_in")) * 1000),
     state: urlParams.get("state"),
