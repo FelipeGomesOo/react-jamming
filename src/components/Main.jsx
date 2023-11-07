@@ -1,5 +1,5 @@
-import React, {useState, useEffect, useCallback} from 'react'; 
-import { Navigate } from 'react-router-dom';
+import React, {useState, useEffect} from 'react';  
+import { useNavigate } from 'react-router-dom'; 
 import NavBar from './NavBar';
 import SavedPlaylistList from './SavedPlaylistList';
 import SearchBar from './SearchBar';
@@ -7,9 +7,72 @@ import SearchResult  from './SearchResult';
 import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
-export default function Main({ApiData, isLoggedIn}) {   
-    
-    
+export default function Main({getAccessToken, noToken, localToken}) {   
+    const navigate = useNavigate();
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");      
+
+    async function handleAuthenticationFlow() {
+        if (!code) {  
+            console.log('No code');
+            localStorage.clear();              
+            navigate('/login');                       
+        }
+         else {
+            if(noToken){
+                try {
+                    console.log("Code found");
+                    const accessToken = await getAccessToken(code);
+                    if (accessToken) { 
+                        await getUserData(accessToken);
+                    }                  
+                } catch (error) { 
+                    console.error('Error obtainign acces token', error);
+                }
+            }
+        } 
+    } 
+    useEffect(() => { 
+        handleAuthenticationFlow();
+      }, []);    
+
+      const [tokenIsValid, setTokenIsValid] = useState(!noToken); 
+
+    // User Data
+
+    const emptyUserData= {id:"", name:"", img:""}
+    const [userData, SetuserData] = useState(emptyUserData);
+
+    const getUserData = async (localToken) => { 
+        const endpoint = "https://api.spotify.com/v1/me";
+        try { const response = await fetch(endpoint, {
+            method: 'GET',
+            headers: { 
+                'Authorization': `Bearer ${localToken}`
+            }
+        });
+        if(response.ok){
+            const jsonResponse = await response.json();                          
+            SetuserData({
+                id: jsonResponse.id, 
+                name: jsonResponse.display_name, 
+                img: jsonResponse.images[0].url 
+            });                      
+        }else{
+            const errorData = await response.json();
+            console.log("Error getting user data:", errorData);
+            console.log(localToken)
+            return null; 
+        } 
+        } catch (error) {
+        console.log(error);
+        }
+    } 
+    useEffect(() => {
+        if(tokenIsValid) {             
+            getUserData(localToken);
+        }
+    }, [tokenIsValid]);
     
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
@@ -34,12 +97,12 @@ export default function Main({ApiData, isLoggedIn}) {
     const [query, SetQuery] = useState(emptyQuery);   
 
     const search = async () => { 
-        const endpoint = `${ApiData.url}${ApiData.search}${searchTerm}&type=track`;
+        const endpoint = `https://api.spotify.com/v1/search?q=${searchTerm}&type=track`;
         try { const response = await fetch(endpoint, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${ApiData.token}`
+                'Authorization': `Bearer ${localToken}`
               }
         });
         if(response.ok){
@@ -53,9 +116,15 @@ export default function Main({ApiData, isLoggedIn}) {
                 artists: item.artists.map(artist => artist.name) 
               }));             
              SetQuery({term: searchTerm, tracks: queryTracks}); 
-        } 
+        } else{
+            const errorData = await response.json();
+            console.log("Error getting search:", errorData);
+            console.log("Error getting search:", localToken);
+            
+            return null; 
+        }
         } catch (error) {
-        console.log(error);
+            console.log(`Search error: ${error}`);
         }
     }  
       
@@ -121,46 +190,19 @@ export default function Main({ApiData, isLoggedIn}) {
     }
 
     
-    // User Data
-
-    const emptyUserData= {id:"", name:"", img:""}
-    const [userData, SetuserData] = useState(emptyUserData);
-
-    const getUserData = useCallback(async () => { 
-        const endpoint = "https://api.spotify.com/v1/me";
-        try { const response = await fetch(endpoint, {
-            method: 'GET',
-            headers: { 
-                'Authorization': `Bearer ${ApiData.token}`
-            }
-        });
-        if(response.ok){
-            const jsonResponse = await response.json();                          
-            SetuserData({
-                id: jsonResponse.id, 
-                name: jsonResponse.display_name, 
-                img: jsonResponse.images[0].url 
-            });                      
-        } 
-        } catch (error) {
-        console.log(error);
-        }
-    }, [ApiData.token]); 
-    useEffect(() => {
-        getUserData();
-      }, [getUserData]);
+     
      
     // Save Playlist to Spotify
     const savePlaylistToSpotify = async (e, thisPlaylistId) => { 
         e.preventDefault();
-        const endpoint = ApiData.url + "users/" + userData.id + "/playlists";
+        const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";
         const playlistToSend = playlists.find(p => p.id === thisPlaylistId);         
         
          try { const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ApiData.token}`
+                'Authorization': `Bearer ${localToken}`
             }, 
             body: JSON.stringify({
                 'name': playlistToSend.name,
@@ -180,14 +222,14 @@ export default function Main({ApiData, isLoggedIn}) {
     }
     // Save Playlist to Spotify
     const addTracksToSpotify = async (playlistToSend, thisPlaylistSpotifyId) => { 
-        const endpoint = ApiData.url + "playlists/" + thisPlaylistSpotifyId + "/tracks";
+        const endpoint = "https://api.spotify.com/v1/playlists/" + thisPlaylistSpotifyId + "/tracks";
         const tracksToSend = playlistToSend.tracks;         
         
          try { const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${ApiData.token}`
+                'Authorization': `Bearer ${localToken}`
             }, 
             body: JSON.stringify({
                 'uris': tracksToSend.map(track => track.uri)
@@ -205,12 +247,10 @@ export default function Main({ApiData, isLoggedIn}) {
     const logout = () => {
         localStorage.setItem('tokenExpiration', "");
     }
-    if (!isLoggedIn) {
+    /* if (!isAuthorized) {
         return <Navigate to={`login`} />
-    } 
-    
-    return (
-        
+    }   */ 
+    return (      
 
       <div className="App"> 
         <SavedPlaylistList 

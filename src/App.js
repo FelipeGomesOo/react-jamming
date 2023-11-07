@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';  
-import { LogInSpotify, isLoggedIn, ApiData } from './services/api';
+import { redirectToAuthCodeFlow,getAccessToken,noToken,localToken } from './services/PKCE2';
 import Login from './components/Login'; 
 import Main from './components/Main';
 import Root from './components/Root.js';
@@ -11,8 +11,8 @@ const appRouter = createBrowserRouter(
     createRoutesFromElements(
         <>
         <Route path='/' element={<Root/>}>  
-            <Route index element={<Main ApiData={ApiData} isLoggedIn={isLoggedIn} publicPath={publicPath} /> } /> 
-            <Route path='login' element={<Login LogInSpotify={LogInSpotify} publicPath={publicPath} /> } />  
+            <Route index element={<Main getAccessToken={getAccessToken} noToken={noToken} localToken={localToken} /> } /> 
+            <Route path='login' element={<Login redirectToAuthCodeFlow={redirectToAuthCodeFlow} /> } />  
         </Route>
         </>
     ),
