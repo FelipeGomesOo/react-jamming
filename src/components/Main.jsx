@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';  
+import React, {useState, useEffect, useCallback} from 'react';  
 import { useNavigate } from 'react-router-dom'; 
 import NavBar from './NavBar';
 import SavedPlaylistList from './SavedPlaylistList';
@@ -12,7 +12,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");      
 
-    async function handleAuthenticationFlow() {
+    const handleAuthenticationFlow = useCallback( async () => {
         if (!code) {  
             console.log('No code');
             localStorage.clear();              
@@ -31,12 +31,13 @@ export default function Main({getAccessToken, noToken, localToken}) {
                 }
             }
         } 
-    } 
+    },[noToken, code, getAccessToken, navigate]);
+    
     useEffect(() => { 
         handleAuthenticationFlow();
-      }, []);    
+      }, [handleAuthenticationFlow]);    
 
-      const [tokenIsValid, setTokenIsValid] = useState(!noToken); 
+       
 
     // User Data
 
@@ -69,10 +70,10 @@ export default function Main({getAccessToken, noToken, localToken}) {
         }
     } 
     useEffect(() => {
-        if(tokenIsValid) {             
+        if(!noToken) {             
             getUserData(localToken);
         }
-    }, [tokenIsValid]);
+    }, [noToken, localToken]);
     
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
@@ -298,5 +299,4 @@ export default function Main({getAccessToken, noToken, localToken}) {
             </div>           
         </main>
       </div>
-)} 
-  
+)}  
