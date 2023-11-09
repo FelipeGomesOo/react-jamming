@@ -7,10 +7,12 @@ import SearchResult  from './SearchResult';
 import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 
-export default function Main({getAccessToken, noToken, localToken}) {   
+export default function Main({getAccessToken, noToken}) {   
     const navigate = useNavigate();
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");      
+    const code = params.get("code");   
+    
+    const [token, SetToken] = useState(localStorage.getItem('access_token'));
 
     const handleAuthenticationFlow = useCallback( async () => {
         if (!code) {  
@@ -19,37 +21,36 @@ export default function Main({getAccessToken, noToken, localToken}) {
             navigate('/login');                       
         }
          else {
-            if(noToken){
+            if(!token){
                 try {
                     console.log("Code found");
                     const accessToken = await getAccessToken(code);
                     if (accessToken) { 
-                        await getUserData(accessToken);
+                        SetToken(accessToken);
                     }                  
                 } catch (error) { 
                     console.error('Error obtainign acces token', error);
                 }
             }
         } 
-    },[noToken, code, getAccessToken, navigate]);
+    },[token, code, getAccessToken, navigate, SetToken]);
     
     useEffect(() => { 
         handleAuthenticationFlow();
       }, [handleAuthenticationFlow]);    
-
+    
        
 
     // User Data
+ 
+    const [userData, SetuserData] = useState({id:"", name:"", img:""});
 
-    const emptyUserData= {id:"", name:"", img:""}
-    const [userData, SetuserData] = useState(emptyUserData);
-
-    const getUserData = async (localToken) => { 
+    const getUserData = async () => { 
         const endpoint = "https://api.spotify.com/v1/me";
         try { const response = await fetch(endpoint, {
             method: 'GET',
             headers: { 
-                'Authorization': `Bearer ${localToken}`
+                'Authorization': `Bearer ${token}`
             }
         });
         if(response.ok){
@@ -62,7 +63,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
         }else{
             const errorData = await response.json();
             console.log("Error getting user data:", errorData);
-            console.log(localToken)
+            console.log(token)
             return null; 
         } 
         } catch (error) {
@@ -70,10 +71,10 @@ export default function Main({getAccessToken, noToken, localToken}) {
         }
     } 
     useEffect(() => {
-        if(!noToken) {             
-            getUserData(localToken);
+        if(token) {             
+            getUserData(token);
         }
-    }, [noToken, localToken]);
+    }, [token]);
     
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
@@ -103,7 +104,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json', 
-                'Authorization': `Bearer ${localToken}`
+                'Authorization': `Bearer ${token}`
               }
         });
         if(response.ok){
@@ -120,7 +121,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
         } else{
             const errorData = await response.json();
             console.log("Error getting search:", errorData);
-            console.log("Error getting search:", localToken);
+            console.log("Error getting search:", token);
             
             return null; 
         }
@@ -150,11 +151,15 @@ export default function Main({getAccessToken, noToken, localToken}) {
         const oldTracks = editPlaylist.tracks.filter((t) => t.id !== trackId);     
         SetEditPlaylist({ ...editPlaylist, tracks: oldTracks});          
     }
-    const resetMyPlaylist = () => {
+    const resetMyPlaylist = () => { 
         SetEditPlaylist(emptyPlaylist);
     }
-    const handlePlaylistName = (e) => {
+    const handlePlaylistName = (e) => { 
         SetEditPlaylist({...editPlaylist, name: e.target.value})
+    }
+    const handleCancelEdit = (e) =>{
+        e.preventDefault();
+        resetMyPlaylist();
     }
     
 
@@ -203,7 +208,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localToken}`
+                'Authorization': `Bearer ${token}`
             }, 
             body: JSON.stringify({
                 'name': playlistToSend.name,
@@ -230,7 +235,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
             method: 'POST',
             headers: { 
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${localToken}`
+                'Authorization': `Bearer ${token}`
             }, 
             body: JSON.stringify({
                 'uris': tracksToSend.map(track => track.uri)
@@ -293,7 +298,7 @@ export default function Main({getAccessToken, noToken, localToken}) {
                         upsertPlaylist={upsertPlaylist}
                         playlistName={editPlaylist.name}
                         handlePlaylistName={handlePlaylistName}
-                        handleCancelEdit={resetMyPlaylist}
+                        handleCancelEdit={handleCancelEdit}
                     />
                 }                
             </div>           

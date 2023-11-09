@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';  
-import { redirectToAuthCodeFlow,getAccessToken,noToken,localToken } from './services/PKCE2';
+import { redirectToAuthCodeFlow,getAccessToken,noToken } from './services/PKCE2';
 import Login from './components/Login'; 
 import Main from './components/Main';
 import Root from './components/Root.js';
@@ -11,7 +11,7 @@ const appRouter = createBrowserRouter(
     createRoutesFromElements(
         <>
         <Route path='/' element={<Root/>}>  
-            <Route index element={<Main getAccessToken={getAccessToken} noToken={noToken} localToken={localToken} /> } /> 
+            <Route index element={<Main getAccessToken={getAccessToken} noToken={noToken} /> } /> 
             <Route path='login' element={<Login redirectToAuthCodeFlow={redirectToAuthCodeFlow} /> } />  
         </Route>
         </>
