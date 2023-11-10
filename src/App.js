@@ -1,7 +1,7 @@
 import React from 'react';
 import './App.css';  
-import { redirectToAuthCodeFlow,getAccessToken,noToken } from './services/PKCE2';
-import Login from './components/Login'; 
+
+import LoginPage from './pages/LoginPage'; 
 import Main from './components/Main';
 import Root from './components/Root.js';
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
@@ -11,8 +11,8 @@ const appRouter = createBrowserRouter(
     createRoutesFromElements(
         <>
         <Route path='/' element={<Root/>}>  
-            <Route index element={<Main getAccessToken={getAccessToken} noToken={noToken} /> } /> 
-            <Route path='login' element={<Login redirectToAuthCodeFlow={redirectToAuthCodeFlow} /> } />  
+            <Route index element={<Main /> } /> 
+            <Route path='login' element={<LoginPage/> } />  
         </Route>
         </>
     ),

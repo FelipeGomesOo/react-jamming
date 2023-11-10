@@ -2,6 +2,7 @@ const redirectUri =  process.env.NODE_ENV === 'production' ? "https://felipe-gom
 const clientId = 'eb472ada336146c6a8384cb9a134a9f4';
 
 export async function redirectToAuthCodeFlow() {
+    localStorage.clear();
     const verifier = generateCodeVerifier(64);
     const challenge = await generateCodeChallenge(verifier);
 
@@ -38,9 +39,7 @@ async function generateCodeChallenge(codeVerifier) {
 }
 
 
-export async function getAccessToken(code) {     
-    
-
+export async function getAccessToken(code) {
     const params = new URLSearchParams();
     params.append("client_id", clientId);
     params.append("grant_type", "authorization_code");
@@ -55,7 +54,8 @@ export async function getAccessToken(code) {
         })
         if(response.ok){
             const tokenData = await response.json();
-            localStorage.setItem("access_token", tokenData.access_token);    
+            localStorage.setItem("access_token", tokenData.access_token); 
+            console.log(`Token from server: ${tokenData.access_token}`)   
             return tokenData.access_token;           
         }else{
             const errorData = await response.json();
@@ -67,7 +67,4 @@ export async function getAccessToken(code) {
     }    
 }
 
-const localToken = localStorage.getItem('access_token');
-const noToken = localToken === null;
 const verifier = localStorage.getItem("verifier");
-export {noToken, localToken}

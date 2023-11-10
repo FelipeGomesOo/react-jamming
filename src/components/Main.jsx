@@ -1,45 +1,17 @@
 import React, {useState, useEffect, useCallback} from 'react';  
-import { useNavigate } from 'react-router-dom'; 
+
 import NavBar from './NavBar';
 import SavedPlaylistList from './SavedPlaylistList';
 import SearchBar from './SearchBar';
 import SearchResult  from './SearchResult';
 import EditPlaylist from './EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
+import useAuth from './hooks/useAuth';
 
-export default function Main({getAccessToken, noToken}) {   
-    const navigate = useNavigate();
-    const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");   
+export default function Main() {    
     
-    const [token, SetToken] = useState(localStorage.getItem('access_token'));
-
-    const handleAuthenticationFlow = useCallback( async () => {
-        if (!code) {  
-            console.log('No code');
-            localStorage.clear();              
-            navigate('/login');                       
-        }
-         else {
-            if(!token){
-                try {
-                    console.log("Code found");
-                    const accessToken = await getAccessToken(code);
-                    if (accessToken) { 
-                        SetToken(accessToken);
-                    }                  
-                } catch (error) { 
-                    console.error('Error obtainign acces token', error);
-                }
-            }
-        } 
-    },[token, code, getAccessToken, navigate, SetToken]);
-    
-    useEffect(() => { 
-        handleAuthenticationFlow();
-      }, [handleAuthenticationFlow]);    
-    
-       
+    const token = useAuth();
+    console.log(token)      
 
     // User Data
  
@@ -72,7 +44,7 @@ export default function Main({getAccessToken, noToken}) {
     } 
     useEffect(() => {
         if(token) {             
-            getUserData(token);
+            getUserData();
         }
     }, [token]);
     

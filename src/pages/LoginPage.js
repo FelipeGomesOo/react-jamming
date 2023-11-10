@@ -1,5 +1,6 @@
 import React from 'react';  
-export default function Login({redirectToAuthCodeFlow}) {     
+import { redirectToAuthCodeFlow} from '../services/PKCE2'; 
+export default function LoginPage() {     
     return (
         <div className="Login">             
             <h1>Welcome to Jamming</h1>  
