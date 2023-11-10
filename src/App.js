@@ -3,6 +3,7 @@ import './App.css';
 
 import LoginPage from './pages/LoginPage'; 
 import Main from './components/Main';
+import SearchPage  from './pages/SearchPage'; 
 import Root from './components/Root.js';
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
 import {ConfigProvider} from './services/FetchConfig';
@@ -13,6 +14,7 @@ const appRouter = createBrowserRouter(
         <Route path='/' element={<Root/>}>  
             <Route index element={<Main /> } /> 
             <Route path='login' element={<LoginPage/> } />  
+            <Route path='search' element={<SearchPage /> } />
         </Route>
         </>
     ),

@@ -53,13 +53,17 @@ export async function getAccessToken(code) {
             body: params
         })
         if(response.ok){
-            const tokenData = await response.json();
-            localStorage.setItem("access_token", tokenData.access_token); 
-            console.log(`Token from server: ${tokenData.access_token}`)   
-            return tokenData.access_token;           
+            const data = await response.json();
+            const accessData = {
+                token: data.access_token,
+                freshToken: data.refresh_token,
+                exp: data.expires_in
+            }
+            localStorage.setItem("localToken", accessData.token);                 
+            return accessData;           
         }else{
             const errorData = await response.json();
-            console.log("Error getting token:", errorData);
+            console.log("Error getting acces data:", errorData);
             return null; 
         }
     }   catch (error) {
