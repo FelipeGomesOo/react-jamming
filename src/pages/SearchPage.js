@@ -1,20 +1,24 @@
 import React, {useState, useEffect} from 'react';  
 
+import { Navigate } from 'react-router-dom'; 
 import NavBar from '../components/NavBar';
 import SavedPlaylistList from '../components/SavedPlaylistList';
 import SearchBar from '../components/SearchBar';
 import SearchResult  from '../components/SearchResult';
 import EditPlaylist from '../components/EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
-import useAuth from '../components/hooks/useAuth';
+import useLocalToken from '../components/hooks/useLocalToken';
+import useLocalCode from '../components/hooks/useLocalCode';
 
 export default function SearchPage() {    
     
-    const  {token}  = useAuth(); 
+    const code = useLocalCode(); 
+    const token = useLocalToken(); 
 
     useEffect(() => {
-        console.log(`Token rendered on SearchPage: ${token}`);    
-    }, [token]);  
+        console.log(`Token rendered on SearchPage: ${token}`); 
+        console.log(`Code rendered on SearchPage: ${code}`);    
+    }, [token, code]);  
 
     // User Data
  
@@ -227,7 +231,10 @@ export default function SearchPage() {
         }  
     }   
     const logout = () => {
-        localStorage.setItem('tokenExpiration', "");
+        localStorage.setItem('localToken', "");
+        localStorage.setItem('API_CODE', "");
+        return <Navigate to={`/`} />
+        
     }
     /* if (!isAuthorized) {
         return <Navigate to={`login`} />

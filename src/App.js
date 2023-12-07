@@ -4,9 +4,8 @@ import './App.css';
 import LoginPage from './pages/LoginPage'; 
 import Main from './components/Main';
 import SearchPage  from './pages/SearchPage'; 
-import Root from './components/Root.js';
-import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom';
-import {ConfigProvider} from './services/FetchConfig';
+import Root from './components/Root.js'; 
+import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom'; 
 const publicPath = process.env.REACT_APP_PUBLIC_URL; 
 const appRouter = createBrowserRouter(
     createRoutesFromElements(
@@ -19,7 +18,7 @@ const appRouter = createBrowserRouter(
         </>
     ),
     {
-        basename: '/jamming', // Adicione o basename aqui
+        basename: '/jamming', 
     }
 ); 
 
@@ -27,9 +26,7 @@ export default function App() {
     console.log(`Public path: ${publicPath}`);
     console.log(`NODE_ENV: ${process.env.NODE_ENV}`);      
     return (
-        <>  
-        <ConfigProvider> 
-          <RouterProvider router={appRouter}/>
-        </ConfigProvider>     
+        <> 
+            <RouterProvider router={appRouter}/>   
         </>
 )} 
