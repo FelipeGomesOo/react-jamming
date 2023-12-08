@@ -229,18 +229,23 @@ export default function SearchPage() {
         } catch (error) {
         console.log(error);
         }  
-    }   
+    } 
+    
+    const [isLoggedOut , SetIsLoggedOut] = useState(false);
     const logout = () => {
         localStorage.setItem('localToken', "");
         localStorage.setItem('API_CODE', "");
-        return <Navigate to={`/`} />
-        
+        console.log("Logged out");
+        SetIsLoggedOut(!isLoggedOut);
     }
+    console.log("isLoggedOut",isLoggedOut)
     /* if (!isAuthorized) {
         return <Navigate to={`login`} />
     }   */ 
+    if (isLoggedOut) {
+        return <Navigate to={`/login`} />
+    }
     return (      
-
       <div className="App"> 
         <SavedPlaylistList 
           handleMenu={toggleOpenMenu}
