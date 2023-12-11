@@ -9,6 +9,7 @@ import EditPlaylist from '../components/EditPlaylist';
 import { v4 as uuidv4 } from 'uuid'; 
 import useLocalToken from '../components/hooks/useLocalToken';
 import useLocalCode from '../components/hooks/useLocalCode';
+import { useCallback } from 'react';
 
 export default function SearchPage() {    
     
@@ -17,12 +18,12 @@ export default function SearchPage() {
 
     // Logged out
     const [isLoggedOut, SetIsLoggedOut] = useState(false);
-    const logout = () => {
+    const logout = useCallback(() => {
         localStorage.setItem('localToken', "");
         localStorage.setItem('API_CODE', "");
         console.log("Logged out");
-        SetIsLoggedOut(!isLoggedOut);
-    }
+        SetIsLoggedOut(true);
+    }, []);
     //console.log("isLoggedOut",isLoggedOut)
 
     useEffect(() => {
@@ -62,7 +63,7 @@ export default function SearchPage() {
         if(token) {             
             getUserData();
         }
-    }, [token]);
+    }, [token, logout]);
 
     useEffect(() => {
     // Get Playlist Tracks From User on Spotify
