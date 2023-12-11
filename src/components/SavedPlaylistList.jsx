@@ -1,7 +1,7 @@
 import React from 'react';
 import SavedPlaylist from './SavedPlaylist'
 
-export default function SavedPlaylistList({playlists, editThisPlaylist, removeThisPlaylist, handleSaveToSpotify, openMenu, handleMenu}) {
+export default function SavedPlaylistList({playlists, editThisPlaylist, removeThisPlaylist, handleSyncToSpotify, openMenu, handleMenu}) {
     const emptyState = playlists.length === 0;
 
     const addSomePlaylists = (
@@ -19,7 +19,7 @@ export default function SavedPlaylistList({playlists, editThisPlaylist, removeTh
                         playlist={playlist} 
                         handleEdit={(e) => editThisPlaylist(e, playlist.id)} 
                         handleRemove={(e) => removeThisPlaylist(e, playlist.id)}                         
-                        handleSaveToSpotify={(e) => handleSaveToSpotify(e, playlist.id)}
+                        handleSyncToSpotify={(e) => handleSyncToSpotify(e, playlist.id)}
                     />)
             }
         </ul>

@@ -264,6 +264,35 @@ main .App-row{
   justify-content: center;
   font-size: 2rem;  
 }
+.SavedPlaylist__sync_to_spotify {
+  font-size: 0.75rem; 
+  margin-top: 0.25rem;
+  padding: 0.25rem 1.5rem;
+  display: inline-block;
+  border-radius: 3rem;
+  position: relative;
+}
+
+.lds-dual-ring {
+  position: absolute;  
+  display: block;
+  top: 4px;
+  right: 5px;
+  width: 10px;
+  height: 10px; 
+  border-radius: 50%;
+  border: 2px solid #000;
+  border-color: #000000 transparent #000 transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
 
 .Dropdown{
   cursor: pointer;
@@ -280,4 +309,26 @@ main .App-row{
 }
 .Dropdown__item {
   padding: 0.5rem 1rem;
+}
+
+.Pagination{
+  margin: 1rem 0;
+  display: flex;
+  gap: 0.5rem; 
+  flex-wrap: wrap;
+}
+.Pagination li{
+  cursor: pointer;
+  width: 2rem;
+  text-align: center;
+  border-radius: 3px;
+  background-color: transparent;
+  border: 1px solid#888888;
+  color: #fff;
+}
+
+.Pagination li.current{
+  background-color: rgb(0, 255, 132);
+  color: #282c34;
+  border-color: rgb(0, 255, 132);
 }

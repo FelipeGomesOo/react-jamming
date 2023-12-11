@@ -13,18 +13,25 @@ import useLocalCode from '../components/hooks/useLocalCode';
 export default function SearchPage() {    
     
     const code = useLocalCode(); 
-    const token = useLocalToken(); 
+    const token = useLocalToken();  
+
+    // Logged out
+    const [isLoggedOut, SetIsLoggedOut] = useState(false);
+    const logout = () => {
+        localStorage.setItem('localToken', "");
+        localStorage.setItem('API_CODE', "");
+        console.log("Logged out");
+        SetIsLoggedOut(!isLoggedOut);
+    }
+    //console.log("isLoggedOut",isLoggedOut)
 
     useEffect(() => {
         console.log(`Token rendered on SearchPage: ${token}`); 
-        console.log(`Code rendered on SearchPage: ${code}`);    
-    }, [token, code]);  
+        console.log(`Code rendered on SearchPage: ${code}`);     
+    }, [token, code]);
 
     // User Data
- 
     const [userData, SetuserData] = useState({id:"", name:"", img:""});
-
-    
     useEffect(() => {
         const getUserData = async () => { 
             const endpoint = "https://api.spotify.com/v1/me";
@@ -40,11 +47,12 @@ export default function SearchPage() {
                     id: jsonResponse.id, 
                     name: jsonResponse.display_name, 
                     img: jsonResponse.images[0].url 
-                });                      
+                });
             }else{
                 const errorData = await response.json();
                 console.log("Error getting user data:", errorData);
                 console.log(token)
+                logout()    
                 return null; 
             } 
             } catch (error) {
@@ -55,7 +63,72 @@ export default function SearchPage() {
             getUserData();
         }
     }, [token]);
+
+    useEffect(() => {
+    // Get Playlist Tracks From User on Spotify
+    const getPlaylistTracks = async (playlistId) => {
+        const endpoint = `https://api.spotify.com/v1/playlists/${playlistId}/tracks`; 
+        try { const response = await fetch(endpoint, {
+           method: 'GET',
+           headers: { 
+               'Content-Type': 'application/json',
+               'Authorization': `Bearer ${token}`
+           }
+       });
+       if(response.ok){
+           const data = await response.json();
+           console.log("My tracks:", data.items) 
+           const myPlaylist = data.items.map(item => ({
+               id:         item.track.id,
+               uri:        item.track.uri,
+               thumb:      item.track.album.images[0].url,
+               title:      item.track.name,
+               album:      item.track.album.name,
+               artists:    item.track.artists.map(artist => artist.name) 
+           }))
+           return myPlaylist; 
+       } 
+       } catch (error) {
+       console.log(error);
+       }
+   }
+   // Get Playlists From User on Spotify
+        const getUserPlaylists = async () => {
+            const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";
+            try { const response = await fetch(endpoint, {
+                method: 'GET',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if(response.ok){
+                const data = await response.json();
+                console.log("My playlists:", data.items) 
+                const fetchAndMapPlaylists = async () => {
+                    const playlistPromises = data.items.map(async (item) => {
+                      const playlistTracks = await getPlaylistTracks(item.id);
+                      return {
+                        id: uuidv4(),
+                        name: item.name,
+                        tracks: playlistTracks,
+                        spotifyId: item.id,
+                      };
+                    });
+                    const myPlaylists = await Promise.all(playlistPromises);
+                    console.log("myPlaylists", myPlaylists); 
+                    SetPlaylists((playlists) => [...myPlaylists]);
+                  };
+                fetchAndMapPlaylists();                       
+            } 
+            } catch (error) {
+            console.log(error);
+            }
+        }
+        getUserPlaylists();
+    },[userData, token])
     
+    // Menu Toggler
     const [openMenu, SetOpenMenu] = useState(false);
     const toggleOpenMenu = (e) => {    
       e.preventDefault();
@@ -63,23 +136,18 @@ export default function SearchPage() {
     }
 
     // Search term
-
     const [searchTerm, SetSearchTerm] = useState("");
-
     const handleTerm = (e) => SetSearchTerm(e.target.value);
     const handleSearchSubmit = (e) => {
         e.preventDefault(); 
         searchTerm.length !== 0 && (search());
     }
 
-
     // Query
-
     const emptyQuery = {term: "", tracks: []}
     const [query, SetQuery] = useState(emptyQuery);   
-
-    const search = async () => { 
-        const endpoint = `https://api.spotify.com/v1/search?q=${searchTerm}&type=track`;
+    const search = async (offSet = 0) => { 
+        const endpoint = `https://api.spotify.com/v1/search?q=${searchTerm}&type=track&limit=10&offset=${offSet}`;
         try { const response = await fetch(endpoint, {
             method: 'GET',
             headers: {
@@ -89,6 +157,8 @@ export default function SearchPage() {
         });
         if(response.ok){
             const jsonResponse = await response.json(); 
+            console.log("Query jsonResponse",jsonResponse)
+            const totalTracks  = jsonResponse.tracks.total; 
             const queryTracks = jsonResponse.tracks.items.map(item => ({
                 id:  item.id,
                 uri:  item.uri,
@@ -97,12 +167,10 @@ export default function SearchPage() {
                 album: item.album.name,
                 artists: item.artists.map(artist => artist.name) 
               }));             
-             SetQuery({term: searchTerm, tracks: queryTracks}); 
+             SetQuery({term: searchTerm, tracks: queryTracks, totalTracks:totalTracks, currentPage:offSet}); 
         } else{
             const errorData = await response.json();
-            console.log("Error getting search:", errorData);
-            console.log("Error getting search:", token);
-            
+            console.log("Error getting search:", errorData); 
             return null; 
         }
         } catch (error) {
@@ -111,10 +179,8 @@ export default function SearchPage() {
     }  
       
     // Edit a playlist
-
     const emptyPlaylist = {id:"", name:"", tracks:[], spotifyId:""}
     const [editPlaylist, SetEditPlaylist] = useState(emptyPlaylist);
-
     const addToPlaylist = (e) => {
         e.preventDefault();
         const trackId = e.target.closest('.Track').id;
@@ -124,7 +190,7 @@ export default function SearchPage() {
             ...editPlaylist,
             tracks: [newTrack, ...editPlaylist.tracks]
           });             
-      }
+    }
     const removeFromPlaylist = (e) => {
         e.preventDefault();
         const trackId = e.target.closest('.Track').id;
@@ -144,9 +210,7 @@ export default function SearchPage() {
     
 
     // Saved Playlists
- 
     const [playlists, SetPlaylists] = useState([]);     
-    
     const upsertPlaylist = (e) => {
         e.preventDefault(); 
         const savedPlaylist = playlists.find((list) => list.id === editPlaylist.id);
@@ -173,16 +237,37 @@ export default function SearchPage() {
         const cleanedPlaylists = playlists.filter((list) => list.id !== playlistId);
         SetPlaylists(cleanedPlaylists);
         resetMyPlaylist(); 
-    }
+    } 
 
+    // Activate Sync Feedback
+    const syncFeedback = (playlist, oldList, trueFalse) => {
+        playlist.syncing = trueFalse;
+        SetPlaylists([playlist, ...oldList])
+        console.log('Syncing is:', trueFalse)
+    }
     
-     
-     
-    // Save Playlist to Spotify
-    const savePlaylistToSpotify = async (e, thisPlaylistId) => { 
+    // handleSyncToSpotify
+    const handleSyncToSpotify = async (e, playlistId) => {
         e.preventDefault();
-        const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";
-        const playlistToSend = playlists.find(p => p.id === thisPlaylistId);         
+        const playlist = playlists.find(p => p.id === playlistId);
+        const oldList = playlists.filter(p => p.id !== playlistId); 
+        syncFeedback(playlist, oldList, true);
+
+        if(playlist.spotifyId === "") {
+            savePlaylistToSpotify(playlist)  
+            setTimeout(() => {
+                syncFeedback(playlist, oldList, false);
+            }, 3000);
+        } else {
+            updatePlaylistOnSpotify(playlist) 
+            setTimeout(() => {
+                syncFeedback(playlist, oldList, false);
+            }, 3000);
+        } 
+    }
+    // Save Playlist to Spotify
+    const savePlaylistToSpotify = async (playlistToSend) => {  
+        const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";     
         
          try { const response = await fetch(endpoint, {
             method: 'POST',
@@ -206,11 +291,10 @@ export default function SearchPage() {
         console.log(error);
         }  
     }
-    // Save Playlist to Spotify
+
+    // Add tracks to Spotify Playlist
     const addTracksToSpotify = async (playlistToSend, thisPlaylistSpotifyId) => { 
-        const endpoint = "https://api.spotify.com/v1/playlists/" + thisPlaylistSpotifyId + "/tracks";
-        const tracksToSend = playlistToSend.tracks;         
-        
+        const endpoint = "https://api.spotify.com/v1/playlists/" + thisPlaylistSpotifyId + "/tracks";        
          try { const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 
@@ -218,9 +302,8 @@ export default function SearchPage() {
                 'Authorization': `Bearer ${token}`
             }, 
             body: JSON.stringify({
-                'uris': tracksToSend.map(track => track.uri)
+                'uris': playlistToSend.tracks.map(track => track.uri)
               })
-            
         });
         if(response.ok){
             const jsonResponse = await response.json();                          
@@ -230,21 +313,54 @@ export default function SearchPage() {
         console.log(error);
         }  
     } 
-    
-    const [isLoggedOut , SetIsLoggedOut] = useState(false);
-    const logout = () => {
-        localStorage.setItem('localToken', "");
-        localStorage.setItem('API_CODE', "");
-        console.log("Logged out");
-        SetIsLoggedOut(!isLoggedOut);
+    // Update Playlist tracks on Spotify
+    const updateTracksOnSpotify = async (playlistToSend) => {
+        const endpoint = `https://api.spotify.com/v1/playlists/${playlistToSend.spotifyId}/tracks`; 
+        try { const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }, 
+            body: JSON.stringify({
+                'uris': playlistToSend.tracks.map(track => track.uri)
+                })
+        });
+        if(response.ok){
+            const data = await response.json();                          
+            console.log(data); 
+        } 
+        } catch (error) {
+            console.log(error);
+        }
     }
-    console.log("isLoggedOut",isLoggedOut)
-    /* if (!isAuthorized) {
-        return <Navigate to={`login`} />
-    }   */ 
-    if (isLoggedOut) {
+    // Update Playlist details on Spotify 
+    const updatePlaylistOnSpotify = async (playlistToSend) => {  
+        const endpoint = `https://api.spotify.com/v1/playlists/${playlistToSend.spotifyId}`; 
+        try { const response = await fetch(endpoint, {
+            method: 'PUT',
+            headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            }, 
+            body: JSON.stringify({
+                'name': playlistToSend.name 
+                })
+        });
+        if(response.ok){
+            const data = await response.text();                          
+            console.log(data);
+            updateTracksOnSpotify(playlistToSend); 
+        } 
+        } catch (error) {
+            console.log(error);
+        }  
+    }
+
+    if(isLoggedOut) {
         return <Navigate to={`/login`} />
     }
+
     return (      
       <div className="App"> 
         <SavedPlaylistList 
@@ -254,13 +370,13 @@ export default function SearchPage() {
           playlists={playlists}
           removeThisPlaylist={removeThisPlaylist}
           editThisPlaylist={editThisPlaylist}
-          handleSaveToSpotify={savePlaylistToSpotify}             
+          handleSyncToSpotify={handleSyncToSpotify}             
         />
         <NavBar 
           openMenu={toggleOpenMenu} 
           playlists={playlists}
           userData={userData}
-          logout={logout}
+          logout={logout} 
         /> 
         <main>                
             <div className="App-row">
@@ -277,6 +393,9 @@ export default function SearchPage() {
                         queryTracks={query.tracks} 
                         addToPlaylist={addToPlaylist}
                         editListTracks={editPlaylist.tracks}
+                        search={search}
+                        totalTracks={query.totalTracks}
+                        currentPage={query.currentPage}
                     />
                 }
                 {editPlaylist.tracks.length !== 0 &&
