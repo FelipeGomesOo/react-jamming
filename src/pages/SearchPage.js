@@ -77,8 +77,7 @@ export default function SearchPage() {
            }
        });
        if(response.ok){
-           const data = await response.json();
-           console.log("My tracks:", data.items) 
+           const data = await response.json();  
            const myPlaylist = data.items.map(item => ({
                id:         item.track.id,
                uri:        item.track.uri,
@@ -94,8 +93,9 @@ export default function SearchPage() {
        }
    }
    // Get Playlists From User on Spotify
-        const getUserPlaylists = async () => {
-            const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";
+   
+        const getUserPlaylists = async (userId) => {
+            const endpoint = `https://api.spotify.com/v1/users/${userId}/playlists`;
             try { const response = await fetch(endpoint, {
                 method: 'GET',
                 headers: { 
@@ -104,8 +104,7 @@ export default function SearchPage() {
                 }
             });
             if(response.ok){
-                const data = await response.json();
-                console.log("My playlists:", data.items) 
+                const data = await response.json(); 
                 const fetchAndMapPlaylists = async () => {
                     const playlistPromises = data.items.map(async (item) => {
                       const playlistTracks = await getPlaylistTracks(item.id);
@@ -126,7 +125,11 @@ export default function SearchPage() {
             console.log(error);
             }
         }
-        getUserPlaylists();
+    if(userData) {
+        console.log("userData", userData);
+        const userId = userData.id;
+        getUserPlaylists(userId);
+    }
     },[userData, token])
     
     // Menu Toggler
@@ -241,8 +244,9 @@ export default function SearchPage() {
     } 
 
     // Activate Sync Feedback
-    const syncFeedback = (playlist, oldList, trueFalse) => {
+    const syncFeedback = (playlist, oldList, trueFalse, spID) => {
         playlist.syncing = trueFalse;
+        playlist.spotifyId = spID;
         SetPlaylists([playlist, ...oldList])
         console.log('Syncing is:', trueFalse)
     }
@@ -252,23 +256,24 @@ export default function SearchPage() {
         e.preventDefault();
         const playlist = playlists.find(p => p.id === playlistId);
         const oldList = playlists.filter(p => p.id !== playlistId); 
-        syncFeedback(playlist, oldList, true);
+        syncFeedback(playlist, oldList, true, playlist.spotifyId);
+        console.log(playlist);
 
         if(playlist.spotifyId === "") {
-            savePlaylistToSpotify(playlist)  
+            const playlistSpotifyId = await savePlaylistToSpotify(playlist);  
             setTimeout(() => {
-                syncFeedback(playlist, oldList, false);
+                syncFeedback(playlist, oldList, false, playlistSpotifyId);
             }, 3000);
         } else {
             updatePlaylistOnSpotify(playlist) 
             setTimeout(() => {
-                syncFeedback(playlist, oldList, false);
+                syncFeedback(playlist, oldList, false, playlist.spotifyId);
             }, 3000);
         } 
     }
     // Save Playlist to Spotify
     const savePlaylistToSpotify = async (playlistToSend) => {  
-        const endpoint = "https://api.spotify.com/v1/users/" + userData.id + "/playlists";     
+        const endpoint = `https://api.spotify.com/v1/users/${userData.id}/playlists`;     
         
          try { const response = await fetch(endpoint, {
             method: 'POST',
@@ -286,7 +291,8 @@ export default function SearchPage() {
         if(response.ok){
             const jsonResponse = await response.json();                          
             console.log(jsonResponse.id);
-            addTracksToSpotify(playlistToSend, jsonResponse.id);                       
+            addTracksToSpotify(playlistToSend, jsonResponse.id);
+            return jsonResponse.id;                       
         } 
         } catch (error) {
         console.log(error);
@@ -295,7 +301,7 @@ export default function SearchPage() {
 
     // Add tracks to Spotify Playlist
     const addTracksToSpotify = async (playlistToSend, thisPlaylistSpotifyId) => { 
-        const endpoint = "https://api.spotify.com/v1/playlists/" + thisPlaylistSpotifyId + "/tracks";        
+        const endpoint = `https://api.spotify.com/v1/playlists/${thisPlaylistSpotifyId}/tracks`;        
          try { const response = await fetch(endpoint, {
             method: 'POST',
             headers: { 
