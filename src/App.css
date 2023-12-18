@@ -332,3 +332,23 @@ main .App-row{
   color: #282c34;
   border-color: rgb(0, 255, 132);
 }
+
+.Login {
+  height: 100vh;
+  display: flex;
+  align-items: center; 
+  width: 100%;
+  justify-content: center;
+}
+
+.Login div{
+  border: #353942 1px solid;
+  border-radius:1rem;
+  padding: 1rem 2rem 2rem 2rem;
+  text-align: center;
+  width: 60vh;
+}
+.Login button{
+  width: 100%;
+  margin: 2rem 0 1rem 0;
+}
