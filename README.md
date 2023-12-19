@@ -6,6 +6,7 @@ Jamming allows users to search the Spotify library, create a personalized playli
 
 ![Jamming Screen](https://felipe-gomes.com/static/media/jamming.c5430d65125f53e5e202.jpg)
 
+![Jamming Screen](https://github.com/FelipeGomesOo/FelipeGomesOo/blob/master/src/assets/project-galleries/jamming/jamming-sequence.gif?raw=true)
 
 
 ## Available Scripts
