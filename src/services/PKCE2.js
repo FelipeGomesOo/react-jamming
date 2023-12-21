@@ -5,7 +5,7 @@ const localToken = localStorage.getItem('localToken');
 export async function redirectToAuthCodeFlow() { 
     const verifier = generateCodeVerifier(64);
     const challenge = await generateCodeChallenge(verifier);
-
+    localStorage.removeItem("code_verifier");
     localStorage.setItem("code_verifier", verifier);
 
     const params = new URLSearchParams();
@@ -37,10 +37,7 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/\//g, '_')
         .replace(/=+$/, '');
 }
-
-const codeVerifier = localStorage.getItem("code_verifier");
-
-export async function getAccessToken(code) { 
+export async function getAccessToken(code, codeVerifier) { 
    if(!localToken) {
         console.log("GetAccess Token Init");
         const url = "https://accounts.spotify.com/api/token";
@@ -67,7 +64,8 @@ export async function getAccessToken(code) {
                     exp: data.expires_in
                 }
                 localStorage.setItem("localToken", accessData.token);  
-                console.log("Access data", accessData)              
+                console.log("Access data", accessData);
+                console.log("Code verifier", codeVerifier);             
                 return accessData;           
             }else{
                 console.log("Response is bad");
