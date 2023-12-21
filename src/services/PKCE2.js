@@ -64,14 +64,14 @@ export async function getAccessToken(code, codeVerifier) {
                     exp: data.expires_in
                 }
                 localStorage.setItem("localToken", accessData.token);  
-                console.log("Access data", accessData);
-                console.log("Code verifier", codeVerifier);             
+                console.log("Access data", accessData);             
                 return accessData;           
             }else{
                 console.log("Response is bad");
                 const errorData = await response.json();
                 console.log("Error getting acces data:", errorData);
-                console.log("Code passed:", code)
+                console.log("Code passed:", code);
+                console.log("Code verifier", codeVerifier);
                 return null; 
             }
         }
