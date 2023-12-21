@@ -38,6 +38,8 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, '');
 }
 
+const code_verifier = localStorage.getItem("code_verifier");
+
 export async function getAccessToken(code) { 
    if(!localToken) {
         console.log("GetAccess Token Init");
@@ -85,5 +87,3 @@ export async function getAccessToken(code) {
         return localToken;
     }   
 }
-
-const code_verifier = localStorage.getItem("code_verifier");
