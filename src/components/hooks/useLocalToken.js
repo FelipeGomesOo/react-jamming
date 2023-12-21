@@ -1,4 +1,8 @@
 export default function useLocalToken(){       
     const token = localStorage.getItem('localToken');
-    return token
+    if(token) {
+        return token;
+    }else {
+        return null;
+    }
 } 

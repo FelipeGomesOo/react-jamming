@@ -1,30 +1,23 @@
-import React, { useState}  from 'react';   
-import { Navigate } from 'react-router-dom';  
+import React  from 'react';   
+import { Navigate } from 'react-router-dom';   
 import useLocalCode from './hooks/useLocalCode';  
-import { getAccessToken } from '../services/PKCE2';
-import { useEffect } from 'react';
+import useLocalToken from './hooks/useLocalToken';  
 import useCodeVerifier from './hooks/useCodeVerifier';
 
 export default function Main() { 
-    const [tokenGranted, setTokenGranted] = useState(false);  
+    //const [tokenGranted, setTokenGranted] = useState(false);  
     const code = useLocalCode(); 
+    const localToken = useLocalToken(); 
     const codeVerifier = useCodeVerifier();
     
-    useEffect(() => {
-        if(code) {
-            const grantToken = async () => { 
-                const token = await getAccessToken(code, codeVerifier);
-                if(token){
-                    setTokenGranted(true);
-                } 
-              }; 
-            grantToken();
-        } 
-    },[code, codeVerifier]) 
+    console.log("code", code)
+    console.log("localToken", localToken)
+    console.log("codeVerifier", codeVerifier)
     return(
     <>
-        {!code && <Navigate to='/login' />}
-        {tokenGranted && <Navigate to='/search' />}
+        {!code && <Navigate to='/login' />} 
+        {code && !localToken && <Navigate to='/requestToken' />} 
+        {code && localToken && <Navigate to='/search' />} 
     </>
     )
   }  

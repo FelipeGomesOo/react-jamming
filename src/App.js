@@ -4,6 +4,7 @@ import './App.css';
 import LoginPage from './pages/LoginPage'; 
 import Main from './components/Main';
 import SearchPage  from './pages/SearchPage'; 
+import RequestTokenPage from './pages/RequestTokenPage';
 import Root from './components/Root.js'; 
 import {RouterProvider, createBrowserRouter, createRoutesFromElements, Route} from 'react-router-dom'; 
 const publicPath = process.env.REACT_APP_PUBLIC_URL; 
@@ -14,6 +15,7 @@ const appRouter = createBrowserRouter(
             <Route index element={<Main /> } /> 
             <Route path='login' element={<LoginPage/> } />  
             <Route path='search' element={<SearchPage /> } />
+            <Route path='requestToken' element={<RequestTokenPage /> } />
         </Route>
         </>
     ),

@@ -333,7 +333,7 @@ main .App-row{
   border-color: rgb(0, 255, 132);
 }
 
-.Login {
+.Login, .RequestToken {
   height: 100vh;
   display: flex;
   align-items: center; 
@@ -341,14 +341,14 @@ main .App-row{
   justify-content: center;
 }
 
-.Login div{
+.Login div, .RequestToken div{
   border: #353942 1px solid;
   border-radius:1rem;
   padding: 1rem 2rem 2rem 2rem;
   text-align: center;
   width: 60vh;
 }
-.Login button{
+.Login button, .RequestToken button{
   width: 100%;
   margin: 2rem 0 1rem 0;
 }
