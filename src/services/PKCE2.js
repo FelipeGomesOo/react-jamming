@@ -38,7 +38,7 @@ async function generateCodeChallenge(codeVerifier) {
         .replace(/=+$/, '');
 }
 
-const code_verifier = localStorage.getItem("code_verifier");
+const codeVerifier = localStorage.getItem("code_verifier");
 
 export async function getAccessToken(code) { 
    if(!localToken) {
@@ -53,7 +53,7 @@ export async function getAccessToken(code) {
                 client_id: clientId,
                 grant_type: 'authorization_code', code,
                 redirect_uri: redirectUri,
-                code_verifier: code_verifier
+                code_verifier: codeVerifier
             }),
         }
         try{
