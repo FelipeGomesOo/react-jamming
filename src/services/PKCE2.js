@@ -5,6 +5,8 @@ const localToken = localStorage.getItem('localToken');
 export async function redirectToAuthCodeFlow() { 
     const verifier = generateCodeVerifier(64);
     const challenge = await generateCodeChallenge(verifier);
+    localStorage.removeItem('localToken');
+    localStorage.removeItem('API_CODE');
     localStorage.removeItem("code_verifier");
     localStorage.setItem("code_verifier", verifier);
 
